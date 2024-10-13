@@ -1,0 +1,55 @@
+---
+title: "Mderangu Transportation"
+output:
+  html_document: default
+  word_document: default
+date: "2024-10-13"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(lpSolve)
+
+# Define the matrix
+Mat <- matrix(c(22, 14, 30,   # Plant A to W1, W2, W3
+                  16, 20, 24),  # Plant B to W1, W2, W3
+                nrow = 2, byrow = TRUE)
+
+
+# Define the cost matrix (including the dummy warehouse with zero cost)
+costs <- matrix(c(600 + 22, 600 + 14, 600 + 30, 0,    # Plant A to W1, W2, W3, Dummy W4
+                  625 + 16, 625 + 20, 625 + 24, 0),   # Plant B to W1, W2, W3, Dummy W4
+                nrow = 2, byrow = TRUE)
+
+# Define the supply vector (Production capacity of Plant A and Plant B)
+supply <- c(100, 120)
+
+# Define the demand vector (including the dummy warehouse with demand = 10)
+demand <- c(80, 60, 70, 10)
+
+# Solve the transportation problem
+solution <- lp.transport(costs, "min", row.signs = rep("<=", 2), row.rhs = supply,
+                         col.signs = rep("=", 4), col.rhs = demand)
+
+# Display the optimal solution (number of AEDs to be shipped from each plant to each warehouse)
+solution$solution
+
+# Display the minimum total cost (production + shipping)
+solution$objval
+
+#Conclusion
+
+##In this transportation problem, we aimed to optimize the distribution of AEDs produced by Heart Start in two plants (A and B) to three wholesalers (Warehouse 1, Warehouse 2, and Warehouse 3) while minimizing the combined costs of production and shipping.
+
+#Through the formulation of a cost matrix representing the shipping costs from each plant to each warehouse and the application of linear programming using the lpSolve package in R, we established the necessary supply and demand constraints. The production capacities of Plant A (100 units) and Plant B (120 units) were effectively accounted for, alongside the monthly demands of the wholesalers (80 units for Warehouse 1, 60 units for Warehouse 2, and 70 units for Warehouse 3).
+
+#By solving the transportation model, we determined the optimal shipping plan that meets the demands of each warehouse while staying within the production limits of each plant. This solution not only provided the exact distribution of AEDs across the warehouses but also yielded a minimized total cost of production and shipping.
+
+#Overall, this analysis demonstrates the importance of applying quantitative methods in operations management, allowing for efficient resource allocation and cost savings, which can significantly impact the financial performance and competitiveness of a company like Heart Start in the medical device industry.
+
+```
+
+
